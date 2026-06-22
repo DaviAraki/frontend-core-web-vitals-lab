@@ -7,8 +7,6 @@ interface NavItem {
 
 const NAV: readonly NavItem[] = [
   { to: '/', label: 'Home' },
-  { to: '/bad', label: 'Bad' },
-  { to: '/optimized', label: 'Optimized' },
   { to: '/notes', label: 'Notes' },
 ];
 

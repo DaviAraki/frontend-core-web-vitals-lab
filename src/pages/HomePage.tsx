@@ -1,95 +1,114 @@
-import { Link } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import { ProductCard } from '../components/ProductCard';
+import { Reviews } from '../components/Reviews';
+import type { CartWorkerResponse } from '../lib/expensiveWork';
 
-interface DemoCard {
-  readonly to: string;
-  readonly title: string;
-  readonly tone: 'bad' | 'optimized';
-  readonly blurb: string;
-}
+/**
+ * OPTIMIZED IMPLEMENTATION.
+ *
+ * Same UI as /bad, with every Core Web Vitals problem fixed:
+ *   - LCP: optimized WebP hero with explicit width/height, loading="eager" and
+ *     fetchPriority="high"; no artificial render delay.
+ *   - CLS: the promo banner slot is RESERVED up front (fixed min-height); every
+ *     image and avatar has dimensions; typography is stable (no late swap).
+ *   - INP: "Add to cart" posts the expensive work to a Web Worker, so the main
+ *     thread never blocks. The click handler returns immediately.
+ */
+const PRODUCT = {
+  id: 'aurora-headphones',
+  name: 'Aurora Wireless Headphones',
+  price: '$249.00',
+  description:
+    'Over-ear wireless headphones with adaptive noise cancellation, 40-hour battery life, and spatial audio. The /optimized version loads them fast and stays responsive.',
+};
 
-const DEMOS: readonly DemoCard[] = [
-  {
-    to: '/bad',
-    title: '/bad',
-    tone: 'bad',
-    blurb: 'The same page, intentionally broken: huge image, layout shift, janky interactions.',
-  },
-  {
-    to: '/optimized',
-    title: '/optimized',
-    tone: 'optimized',
-    blurb: 'The fixes: sized image, stable layout, main-thread offloading. Same UI, better vitals.',
-  },
+const RELATED = [
+  { name: 'Aurora Buds', price: '$129.00', image: '/images/product-1.webp' },
+  { name: 'Aurora Stand', price: '$39.00', image: '/images/product-2.webp' },
 ];
 
-interface Vital {
-  readonly name: string;
-  readonly good: string;
-  readonly measures: string;
-}
-
-const VITALS: readonly Vital[] = [
-  { name: 'LCP', good: '≤ 2500 ms', measures: 'Loading' },
-  { name: 'INP', good: '≤ 200 ms', measures: 'Responsiveness' },
-  { name: 'CLS', good: '≤ 0.1', measures: 'Visual stability' },
-];
+// Optimized: properly sized WebP, not the 2MB JPEG.
+const HERO_IMAGE = '/images/hero-optimized.webp';
 
 export function HomePage() {
+  const [cartCount, setCartCount] = useState(0);
+  const [adding, setAdding] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    const worker = new Worker(new URL('../lib/cartWorker.ts', import.meta.url), { type: 'module' });
+    worker.onmessage = (event: MessageEvent<CartWorkerResponse>) => {
+      // Runs on the main thread, but only after the work is already done off-thread.
+      setCartCount((c) => c + event.data.quantity);
+      setAdding(false);
+      setStatus('Added to cart (work ran on a worker thread — UI never froze).');
+    };
+    workerRef.current = worker;
+    return () => worker.terminate();
+  }, []);
+
+  const handleAddToCart = (): void => {
+    const worker = workerRef.current;
+    if (!worker || adding) return;
+    setAdding(true);
+    // Non-blocking: hand the expensive work to the worker. The main thread stays
+    // free, so the browser can paint the next frame immediately (good INP).
+    worker.postMessage({ productId: PRODUCT.id, quantity: 1, durationMs: 700 });
+  };
+
   return (
-    <main className="page page--home">
-      <section className="hero hero--home">
+    <main className="page page--product page--optimized">
+      <div className="variant-banner variant-banner--ok" role="status">
+        ✓ Optimized implementation. Compare with <a href="/bad">/bad</a>.
+      </div>
+
+      {/* Optimized: the promo banner slot is reserved up front — no layout shift. */}
+      <div className="promo-banner promo-banner--reserved">
+        🔥 Flash sale — 20% off Aurora for the next hour!
+      </div>
+
+      <section className="hero hero--product">
+        <div className="hero__media">
+          <img
+            className="hero__img"
+            src={HERO_IMAGE}
+            alt={PRODUCT.name}
+            width={1600}
+            height={1000}
+            loading="eager"
+            // fetchPriority is typed on <img> in React 19 — prioritizes the LCP element.
+            fetchPriority="high"
+            decoding="async"
+          />
+        </div>
         <div className="hero__content">
-          <span className="eyebrow">Frontend performance lab</span>
-          <h1>Core Web Vitals, made tangible</h1>
-          <p className="hero__lede">
-            The same product page, rendered twice. One is deliberately slow; the other applies the
-            fixes. Open both, then run Lighthouse from Chrome DevTools to see the difference.
-          </p>
-          <div className="hero__actions">
-            <Link className="btn btn--primary" to="/bad">
-              See the bad version
-            </Link>
-            <Link className="btn btn--ghost" to="/optimized">
-              See the optimized version
-            </Link>
+          <span className="eyebrow eyebrow--ok">/optimized — good vitals</span>
+          <h1 className="hero__title">{PRODUCT.name}</h1>
+          <p className="hero__desc">{PRODUCT.description}</p>
+
+          <div className="price-card">
+            <span className="price-card__price">{PRODUCT.price}</span>
+            <span className="price-card__hint">Free shipping · 2-year warranty</span>
+            <button type="button" className="btn btn--primary" onClick={handleAddToCart} disabled={adding}>
+              {adding ? 'Adding…' : 'Add to cart'}
+            </button>
+            {cartCount > 0 && <span className="cart-count">Cart: {cartCount}</span>}
+            {status && <span className="cart-status cart-status--ok">{status}</span>}
           </div>
         </div>
       </section>
 
-      <section className="home-demos">
-        {DEMOS.map((demo) => (
-          <Link key={demo.to} to={demo.to} className={`demo-card demo-card--${demo.tone}`}>
-            <span className={`demo-card__tag demo-card__tag--${demo.tone}`}>
-              {demo.tone === 'bad' ? '⚠ Warning' : '✓ Optimized'}
-            </span>
-            <h3>{demo.title}</h3>
-            <p>{demo.blurb}</p>
-            <span className="demo-card__cta">Open →</span>
-          </Link>
-        ))}
-      </section>
+      <Reviews stable />
 
-      <section className="home-explainer">
-        <h2>What are Core Web Vitals?</h2>
-        <p>
-          Core Web Vitals are Google’s user-experience signals for the web. This lab focuses on the
-          three core metrics:
-        </p>
-        <ul className="metric-legend">
-          {VITALS.map((v) => (
-            <li key={v.name} className="metric-legend__item metric-legend__item--core">
-              <strong>{v.name}</strong>
-              <span>
-                {v.measures} · good {v.good}
-              </span>
-            </li>
+      <section className="related" aria-label="Related products">
+        <h2>You might also like</h2>
+        <div className="related__grid">
+          {RELATED.map((p) => (
+            // stable={true} → sized image, no layout shift.
+            <ProductCard key={p.name} name={p.name} price={p.price} image={p.image} stable />
           ))}
-        </ul>
-        <p className="home-explainer__more">
-          How to measure them? Use{' '}
-          <strong>Chrome DevTools → Lighthouse</strong> (or the Performance panel) against each route.
-          See the <Link to="/notes">notes</Link> for the full story.
-        </p>
+        </div>
       </section>
     </main>
   );
