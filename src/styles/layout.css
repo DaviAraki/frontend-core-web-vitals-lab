@@ -1,0 +1,553 @@
+/* ----------------------------------------------------------------------------
+   Layout & component visuals.
+---------------------------------------------------------------------------- */
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-main {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
+}
+
+/* ---- header / nav ------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.site-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+.site-header__brand:hover {
+  text-decoration: none;
+}
+.site-header__logo {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  font-size: 1rem;
+}
+.site-nav {
+  display: flex;
+  gap: 0.25rem;
+}
+.site-nav__link {
+  padding: 0.45rem 0.8rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.site-nav__link:hover {
+  background: var(--surface-alt);
+  text-decoration: none;
+  color: var(--text);
+}
+.site-nav__link--active {
+  color: var(--primary);
+  background: rgba(79, 70, 229, 0.1);
+}
+
+/* ---- footer ------------------------------------------------------------- */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  margin-top: auto;
+}
+.site-footer__inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ---- generic page ------------------------------------------------------- */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ---- home --------------------------------------------------------------- */
+
+.hero {
+  border-radius: var(--radius-lg);
+  padding: clamp(2rem, 5vw, 3.5rem);
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 45%, var(--accent) 100%);
+  box-shadow: var(--shadow-lg);
+}
+.hero--home .hero__content {
+  max-width: 640px;
+}
+.hero h1 {
+  color: #fff;
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  margin: 0.75rem 0 0.75rem;
+}
+.hero__lede {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+.hero .eyebrow {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.18);
+}
+.hero__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+.hero__actions .btn--primary {
+  background: #fff;
+  color: var(--primary-dark);
+}
+.hero__actions .btn--primary:hover {
+  background: #f1f1f9;
+}
+.hero__actions .btn--ghost {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.hero__actions .btn--ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.home-demos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+.demo-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
+}
+.demo-card:hover {
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.demo-card__tag {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+.demo-card__tag--bad {
+  color: var(--poor);
+  background: var(--poor-bg);
+}
+.demo-card__tag--optimized {
+  color: var(--good);
+  background: var(--good-bg);
+}
+.demo-card h3 {
+  font-family: ui-monospace, monospace;
+  font-size: 1.2rem;
+}
+.demo-card__cta {
+  margin-top: auto;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.home-explainer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+.home-explainer h2 {
+  margin-bottom: 0.75rem;
+}
+.metric-legend {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+}
+.metric-legend__item {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+.metric-legend__item--core {
+  background: rgba(79, 70, 229, 0.06);
+  border-color: rgba(79, 70, 229, 0.25);
+}
+.metric-legend__item strong {
+  font-size: 1.1rem;
+}
+.metric-legend__item span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* ---- product pages ------------------------------------------------------ */
+
+.variant-banner {
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 1rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+.variant-banner--bad {
+  background: var(--poor-bg);
+  color: #7f1d1d;
+  border-color: rgba(220, 38, 38, 0.25);
+}
+.variant-banner--ok {
+  background: var(--good-bg);
+  color: #14532d;
+  border-color: rgba(22, 163, 74, 0.25);
+}
+.variant-banner a {
+  font-weight: 700;
+}
+
+.promo-banner {
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+  text-align: center;
+}
+/* Intentionally bad: a tall, multi-line bar that shifts content a lot when it appears. */
+.promo-banner--bad {
+  min-height: 84px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.45;
+  font-size: 1rem;
+}
+/* Intentionally bad: a second, late-injected bar that shifts content again. */
+.late-notice {
+  border-radius: var(--radius-sm);
+  padding: 0.95rem 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #14532d;
+  background: var(--good-bg);
+  border: 1px solid rgba(22, 163, 74, 0.25);
+  text-align: center;
+}
+/* Optimized: the slot is always present so injecting the banner causes no shift. */
+.promo-banner--reserved {
+  background: linear-gradient(90deg, #0ea5e9, #6366f1);
+}
+
+.hero--product {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 1.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+@media (max-width: 760px) {
+  .hero--product {
+    grid-template-columns: 1fr;
+  }
+}
+.hero__media {
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-alt);
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+}
+.hero__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.hero__media--skeleton {
+  background: linear-gradient(100deg, var(--surface-alt) 30%, #e9ecf5 50%, var(--surface-alt) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+.hero__media--skeleton.is-ready {
+  animation: none;
+}
+.hero__placeholder {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+/* Intentionally bad: a non-contentful skeleton that holds the hero space while the
+   real content is withheld, so the LCP is delayed. */
+.hero__placeholder--full {
+  grid-column: 1 / -1;
+  min-height: 360px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  background: linear-gradient(100deg, var(--surface-alt) 30%, #e9ecf5 50%, var(--surface-alt) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+.hero__title {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  margin: 0.75rem 0;
+}
+/* Intentionally bad: a late font/style change that shifts text (CLS on /bad). */
+.hero__title.is-font-swapped {
+  letter-spacing: 0.04em;
+  line-height: 1.9;
+  font-weight: 800;
+  margin-bottom: 0.7rem;
+  padding-top: 0.5rem;
+}
+.hero__desc {
+  color: var(--text-muted);
+  margin-bottom: 1.25rem;
+}
+
+.price-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+}
+.price-card__price {
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+.price-card__hint {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  margin-bottom: 0.5rem;
+}
+.cart-count {
+  font-weight: 700;
+  color: var(--primary);
+}
+.cart-status {
+  font-size: 0.85rem;
+  color: var(--poor);
+}
+.cart-status--ok {
+  color: var(--good);
+}
+
+/* ---- reviews ------------------------------------------------------------ */
+
+.reviews,
+.related {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+.reviews h2,
+.related h2 {
+  margin-bottom: 1rem;
+}
+.reviews__list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.review {
+  display: flex;
+  gap: 0.9rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.review:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.review__avatar {
+  border-radius: 50%;
+  flex: none;
+  background: var(--surface-alt);
+}
+.review__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+  color: var(--text-muted);
+}
+.review__body p {
+  color: var(--text);
+}
+
+/* ---- related products --------------------------------------------------- */
+
+.related__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.product-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-alt);
+  transition: box-shadow 0.12s ease;
+}
+.product-card:hover {
+  box-shadow: var(--shadow-sm);
+}
+.product-card__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--surface);
+}
+.product-card__name {
+  font-size: 1.05rem;
+  padding: 0.75rem 0.9rem 0;
+}
+.product-card__price {
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 0.15rem 0.9rem 0.9rem;
+}
+
+/* ---- notes page --------------------------------------------------------- */
+
+.page--notes {
+  gap: 1.5rem;
+}
+.notes-head h1 {
+  font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+  margin-top: 0.5rem;
+}
+.prose {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+}
+.prose h2 {
+  margin-bottom: 0.6rem;
+}
+.prose p + p {
+  margin-top: 0.6rem;
+}
+.prose ul {
+  margin: 0.5rem 0 0;
+}
+.prose li + li {
+  margin-top: 0.3rem;
+}
+.prose--ok {
+  border-left: 4px solid var(--good);
+}
+.prose--warn {
+  border-left: 4px solid var(--needs);
+}
+.notes-changes {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.75rem;
+}
+.change-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.1rem;
+  background: var(--surface-alt);
+}
+.change-card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+.change-card p + p {
+  margin-top: 0.35rem;
+}
+.change-card__label {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  margin-right: 0.35rem;
+}
+.change-card__label--bad {
+  color: var(--poor);
+  background: var(--poor-bg);
+}
+.change-card__label--ok {
+  color: var(--good);
+  background: var(--good-bg);
+}

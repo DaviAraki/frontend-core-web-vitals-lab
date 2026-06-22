@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install *)",
+      "Bash(npm config *)",
+      "Bash(env)",
+      "Bash(pnpm config *)",
+      "Bash(curl -sI https://registry.npmjs.org/)",
+      "Bash(NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm install)",
+      "Bash(npm_config_strict_ssl=false NODE_TLS_REJECT_UNAUTHORIZED=0 pnpm install)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm lint *)",
+      "Bash(echo \"LINT EXIT: $?\")",
+      "Bash(pnpm test *)",
+      "Bash(echo \"TEST EXIT: $?\")",
+      "Bash(pnpm build *)",
+      "Bash(echo \"BUILD EXIT: $?\")",
+      "Bash(pnpm exec *)",
+      "Read(//c/Program Files/Google/Chrome/Application/**)",
+      "Read(//c/Program Files \\(x86\\)/Google/Chrome/Application/**)",
+      "Bash(CHROME_PATH='C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe' pnpm exec lhci autorun --collect.numberOfRuns=1)",
+      "Bash(echo \"lhci exit: $?\")",
+      "Bash(node -e ' *)",
+      "Read(//tmp/**)"
+    ]
+  }
+}
