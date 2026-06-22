@@ -83,21 +83,19 @@ pnpm lint        # eslint
 
 There is no in-app metrics widget by design — measure with the real tool:
 
-1. Run the app (`pnpm dev`) and open `/optimized` or `/bad`.
+1. **Crucial:** Build and preview the app (`pnpm build` then `pnpm preview`) and open the preview URL (usually `http://localhost:4173`). Do **not** run Lighthouse against the Vite development server (`pnpm dev`), because Vite serves hundreds of unbundled modules in dev mode which will artificially inflate your FCP and LCP scores.
 2. Open **Chrome DevTools → Lighthouse**.
 3. Choose **Mobile** device + the **Performance** category, then **Analyze page load**. The
    Mobile preset (Slow 4G + slowed CPU) is what makes the bad-vs-optimized contrast obvious:
-   the 1.5 MB hero image tanks LCP/CLS under throttle, while the ~15 KB WebP on `/optimized`
-   stays fast.
-4. Note **LCP**, **CLS**, and **TBT** (the lab proxy for INP). Repeat on the other route and
-   compare.
+   the 1.5 MB hero image tanks LCP/CLS under throttle on the unoptimized branch, while the ~15 KB WebP on the `optimized` branch stays fast.
+4. Note **LCP**, **CLS**, and **TBT** (the lab proxy for INP). Switch branches (`git checkout main` or `git checkout optimized`), rebuild, and compare.
 
-To see the **INP** problem directly: on `/bad`, open the **Performance** panel, record while
+To see the **INP** problem directly: on the `main` branch, open the **Performance** panel, record while
 clicking “Add to cart”, then stop — you’ll see a long blocking task on the main thread. On
-`/optimized` the same work runs in a Web Worker, so the main thread stays free.
+the `optimized` branch the same work runs in a Web Worker, so the main thread stays free.
 
 > Use the **Mobile** preset. On Desktop (no throttling) a huge image still loads fast on
-> localhost, which hides the very problems the `/bad` route is meant to demonstrate.
+> localhost, which hides the very problems the unoptimized version is meant to demonstrate.
 
 ---
 
