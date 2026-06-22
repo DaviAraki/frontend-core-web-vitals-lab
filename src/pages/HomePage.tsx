@@ -1,95 +1,135 @@
-import { Link } from 'react-router';
+import { useEffect, useState } from 'react';
+import { ProductCard } from '../components/ProductCard';
+import { Reviews } from '../components/Reviews';
+import { runExpensiveSync } from '../lib/expensiveWork';
 
-interface DemoCard {
-  readonly to: string;
-  readonly title: string;
-  readonly tone: 'bad' | 'optimized';
-  readonly blurb: string;
-}
+/**
+ * ⚠️ INTENTIONALLY POOR IMPLEMENTATION — DO NOT COPY INTO PRODUCTION.
+ *
+ * Every performance sin below is deliberate and labelled, so readers can map a
+ * symptom to the metric it harms:
+ *   - LCP: the hero is a huge (1.5MB) unoptimized JPEG, lazy-loaded with no
+ *     width/height and no fetchPriority, and its render is delayed ~1s. Under
+ *     real (throttled) conditions this makes the image the slow LCP element.
+ *   - CLS: a promo banner and a notice bar are injected ABOVE already-rendered
+ *     content, the title typography changes after load, and every image/avatar
+ *     is unsized — each one shoves visible content around.
+ *   - INP: "Add to cart" runs a ~700ms synchronous busy-loop on the main thread.
+ */
+const PRODUCT = {
+  id: 'aurora-headphones',
+  name: 'Aurora Wireless Headphones',
+  price: '$249.00',
+  description:
+    'Over-ear wireless headphones with adaptive noise cancellation, 40-hour battery life, and spatial audio. The /bad version of this page loads them about as slowly as possible.',
+};
 
-const DEMOS: readonly DemoCard[] = [
-  {
-    to: '/bad',
-    title: '/bad',
-    tone: 'bad',
-    blurb: 'The same page, intentionally broken: huge image, layout shift, janky interactions.',
-  },
-  {
-    to: '/optimized',
-    title: '/optimized',
-    tone: 'optimized',
-    blurb: 'The fixes: sized image, stable layout, main-thread offloading. Same UI, better vitals.',
-  },
+const RELATED = [
+  { name: 'Aurora Buds', price: '$129.00', image: '/images/product-1.webp' },
+  { name: 'Aurora Stand', price: '$39.00', image: '/images/product-2.webp' },
 ];
 
-interface Vital {
-  readonly name: string;
-  readonly good: string;
-  readonly measures: string;
-}
-
-const VITALS: readonly Vital[] = [
-  { name: 'LCP', good: '≤ 2500 ms', measures: 'Loading' },
-  { name: 'INP', good: '≤ 200 ms', measures: 'Responsiveness' },
-  { name: 'CLS', good: '≤ 0.1', measures: 'Visual stability' },
-];
+// Intentionally bad: the hero is a large, unoptimized JPEG (~1.5MB).
+const HERO_IMAGE = '/images/hero-large.jpg';
 
 export function HomePage() {
+  const [heroImgReady, setHeroImgReady] = useState(false);
+  const [bannerShown, setBannerShown] = useState(false);
+  const [noticeShown, setNoticeShown] = useState(false);
+  const [fontSwapped, setFontSwapped] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [status, setStatus] = useState<string | null>(null);
+
+  // Intentionally bad: artificially delay the hero image render to hurt LCP.
+  useEffect(() => {
+    const t = setTimeout(() => setHeroImgReady(true), 1000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Intentionally bad: inject a banner ABOVE existing content after a delay → CLS.
+  useEffect(() => {
+    const t = setTimeout(() => setBannerShown(true), 1100);
+    return () => clearTimeout(t);
+  }, []);
+  // Intentionally bad: a second, later injected bar shifts content again → more CLS.
+  useEffect(() => {
+    const t = setTimeout(() => setNoticeShown(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Intentionally bad: a late style/font change shifts the title vertically → CLS.
+  useEffect(() => {
+    const t = setTimeout(() => setFontSwapped(true), 900);
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleAddToCart = (): void => {
+    // Intentionally bad: this blocks the main thread to demonstrate INP problems.
+    // The button cannot repaint "Added!" until this loop finishes.
+    runExpensiveSync(700);
+    setCartCount((c) => c + 1);
+    setStatus('Added to cart (after freezing the UI — see the poor INP).');
+  };
+
   return (
-    <main className="page page--home">
-      <section className="hero hero--home">
+    <main className="page page--product page--bad">
+      <div className="variant-banner variant-banner--bad" role="status">
+        ⚠ Intentionally poor implementation — do not copy these patterns. Compare with{' '}
+        <a href="/optimized">/optimized</a>.
+      </div>
+
+      {/* Intentionally bad: bars that appear AFTER first paint, pushing content down (CLS). */}
+      {bannerShown && (
+        <div className="promo-banner promo-banner--bad">
+          <strong>🔥 Flash sale</strong> — 20% off Aurora for the next hour. Use code AURORA20.
+        </div>
+      )}
+      {noticeShown && (
+        <div className="late-notice">
+          ✓ Free 2-day shipping unlocked · 30-day returns · 2-year warranty included
+        </div>
+      )}
+
+      <section className="hero hero--product">
+        <div className="hero__media">
+          {heroImgReady ? (
+            // Intentionally bad: large unoptimized JPEG, lazy, no dimensions, no priority.
+            <img className="hero__img" src={HERO_IMAGE} alt={PRODUCT.name} loading="lazy" />
+          ) : (
+            // Intentionally bad: a non-contentful skeleton holds the space while the
+            // huge hero image render is artificially delayed (hurts LCP).
+            <div className="hero__placeholder" aria-hidden="true">
+              <span>Loading hero…</span>
+            </div>
+          )}
+        </div>
         <div className="hero__content">
-          <span className="eyebrow">Frontend performance lab</span>
-          <h1>Core Web Vitals, made tangible</h1>
-          <p className="hero__lede">
-            The same product page, rendered twice. One is deliberately slow; the other applies the
-            fixes. Open both, then run Lighthouse from Chrome DevTools to see the difference.
-          </p>
-          <div className="hero__actions">
-            <Link className="btn btn--primary" to="/bad">
-              See the bad version
-            </Link>
-            <Link className="btn btn--ghost" to="/optimized">
-              See the optimized version
-            </Link>
+          <span className="eyebrow eyebrow--bad">/bad — poor vitals</span>
+          <h1 className={`hero__title ${fontSwapped ? 'is-font-swapped' : ''}`}>{PRODUCT.name}</h1>
+          <p className="hero__desc">{PRODUCT.description}</p>
+
+          <div className="price-card">
+            <span className="price-card__price">{PRODUCT.price}</span>
+            <span className="price-card__hint">Free shipping · 2-year warranty</span>
+            <button type="button" className="btn btn--primary" onClick={handleAddToCart}>
+              Add to cart
+            </button>
+            {cartCount > 0 && <span className="cart-count">Cart: {cartCount}</span>}
+            {status && <span className="cart-status">{status}</span>}
           </div>
         </div>
       </section>
 
-      <section className="home-demos">
-        {DEMOS.map((demo) => (
-          <Link key={demo.to} to={demo.to} className={`demo-card demo-card--${demo.tone}`}>
-            <span className={`demo-card__tag demo-card__tag--${demo.tone}`}>
-              {demo.tone === 'bad' ? '⚠ Warning' : '✓ Optimized'}
-            </span>
-            <h3>{demo.title}</h3>
-            <p>{demo.blurb}</p>
-            <span className="demo-card__cta">Open →</span>
-          </Link>
-        ))}
-      </section>
+      <Reviews stable={false} />
 
-      <section className="home-explainer">
-        <h2>What are Core Web Vitals?</h2>
-        <p>
-          Core Web Vitals are Google’s user-experience signals for the web. This lab focuses on the
-          three core metrics:
-        </p>
-        <ul className="metric-legend">
-          {VITALS.map((v) => (
-            <li key={v.name} className="metric-legend__item metric-legend__item--core">
-              <strong>{v.name}</strong>
-              <span>
-                {v.measures} · good {v.good}
-              </span>
-            </li>
+      <section className="related" aria-label="Related products">
+        <h2>You might also like</h2>
+        <div className="related__grid">
+          {RELATED.map((p) => (
+            // stable={false} → unsized image, contributing to CLS.
+            <ProductCard key={p.name} name={p.name} price={p.price} image={p.image} stable={false} />
           ))}
-        </ul>
-        <p className="home-explainer__more">
-          How to measure them? Use{' '}
-          <strong>Chrome DevTools → Lighthouse</strong> (or the Performance panel) against each route.
-          See the <Link to="/notes">notes</Link> for the full story.
-        </p>
+        </div>
       </section>
     </main>
   );
