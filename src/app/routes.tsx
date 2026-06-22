@@ -1,4 +1,3 @@
-import { lazy, Suspense } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router';
 import { App } from './App';
 import { HomePage } from '../pages/HomePage';
