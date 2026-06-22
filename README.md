@@ -142,8 +142,6 @@ preset).
 
 - [`docs/architecture.md`](docs/architecture.md) — folder map, data flow, metrics lifecycle, SPA caveat.
 - [`docs/before-after.md`](docs/before-after.md) — full bad-vs-optimized comparison table.
-- [`docs/pros-cons-pitfalls.md`](docs/pros-cons-pitfalls.md) — pros, cons, pitfalls avoided.
-- [`docs/linkedin-post.md`](docs/linkedin-post.md) — share-ready post draft.
 
 ## License
 
@@ -154,5 +152,3 @@ MIT © Davi Araki.
 ## 🔗 LinkedIn post
 
 > **[TODO: add the LinkedIn post link here]**
-
-See [`docs/linkedin-post.md`](docs/linkedin-post.md) for the draft.
